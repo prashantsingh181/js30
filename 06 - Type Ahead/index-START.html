@@ -1,23 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Type Ahead 👀</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="https://fav.farm/🔥" />
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="https://fav.farm/🔥" />
+  </head>
+  <body>
+    <form class="search-form">
+      <input type="text" class="search" placeholder="City or State" />
+      <ul class="suggestions">
+        <li>Filter for a city</li>
+        <li>or a state</li>
+      </ul>
+    </form>
+    <script>
+      const endpoint =
+        "https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json";
+      let cities = [];
 
-  <form class="search-form">
-    <input type="text" class="search" placeholder="City or State">
-    <ul class="suggestions">
-      <li>Filter for a city</li>
-      <li>or a state</li>
-    </ul>
-  </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+      async function fetchCities(endpoint) {
+        try {
+          const response = await fetch(endpoint);
+          const jsonResponse = await response.json();
+          cities = jsonResponse;
+        } catch (error) {
+          console.error(error.message);
+        }
+      }
 
-</script>
-</body>
+      function filterCities(searchTerm, cities) {
+        return cities.filter((cityObject) => {
+          const regex = new RegExp(searchTerm, "gi");
+          return cityObject.city.match(regex) || cityObject.state.match(regex);
+        });
+        return filteredCities;
+      }
+
+      function displayCities() {
+        if (this.value) {
+          const matchedCities = filterCities(this.value, cities);
+          const html = matchedCities
+            .map((cityObject) => {
+              const regex = new RegExp(this.value, "gi");
+              const cityName = cityObject.city.replace(
+                regex,
+                `<span class="hl">${this.value}</span>`
+              );
+              const stateName = cityObject.state.replace(
+                regex,
+                `<span class="hl">${this.value}</span>`
+              );
+              return `
+              <li>
+                <span class="name">${cityName}, ${stateName}</span>
+                <span class="population">${Number(
+                  cityObject.population
+                ).toLocaleString()}</span>
+              </li>
+              `;
+            })
+            .join("");
+          suggestions.innerHTML = html;
+        } else {
+          suggestions.innerHTML = `
+            <li>Filter for a city</li>
+            <li>or a state</li>
+          `;
+        }
+      }
+
+      window.addEventListener("load", () => fetchCities(endpoint));
+      const searchInput = document.querySelector(".search");
+      const suggestions = document.querySelector(".suggestions");
+      searchInput.addEventListener("input", displayCities);
+    </script>
+  </body>
 </html>
