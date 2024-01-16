@@ -1,20 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>HTML5 Canvas</title>
-  <link rel="icon" href="https://fav.farm/🔥" />
-</head>
-<body>
-<canvas id="draw" width="800" height="800"></canvas>
-<script>
-</script>
+  <head>
+    <meta charset="UTF-8" />
+    <title>HTML5 Canvas</title>
+    <link rel="icon" href="https://fav.farm/🔥" />
+  </head>
+  <body>
+    <div class="selection">
+      <span class="text-heading">Color Selection</span>
+      <div class="color-selection">
+        <button class="btn color-btn active" data-color="black"></button>
+        <button class="btn color-btn" data-color="green"></button>
+        <button class="btn color-btn" data-color="blue"></button>
+        <button class="btn color-btn" data-color="yellow"></button>
+        <button class="btn color-btn" data-color="red"></button>
+        <button class="btn color-btn" data-color="brown"></button>
+        <button class="btn color-btn" data-color="violet"></button>
+        <button class="btn color-btn" data-color="orange"></button>
+        <button class="btn color-btn eraser" data-color="white"></button>
+      </div>
+      <span class="text-heading">Size Selection</span>
+      <div class="size-selection">
+        <button class="btn size-btn active" data-size="10">1x</button>
+        <button class="btn size-btn" data-size="20">2x</button>
+        <button class="btn size-btn" data-size="30">3x</button>
+        <button class="btn size-btn" data-size="40">4x</button>
+      </div>
+    </div>
+    <canvas id="draw"></canvas>
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+      body {
+        display: flex;
+        min-height: 100vh;
+      }
+      canvas {
+        flex: 1;
+      }
+      .selection {
+        display: flex;
+        flex-direction: column;
+        background-color: #9d9f98;
+        width: 150px;
+      }
+      .text-heading{
+        font-size: 18px;
+        margin: 5px;
+        font-style: italic;
+      }
+      .color-selection, .size-selection {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        justify-items: center;
+        align-content: start;
+      }
+      .btn {
+        height: 50px;
+        width: 50px;
+        margin-block: 5px;
+        background-color: antiquewhite;
+        border: 3px solid rgb(108, 107, 107);
+      }
+      .btn.active {
+        outline: 2px solid black;
+      }
+      .eraser {
+        align-self: center;
+        margin-bottom: 5px;
+        width: 125px;
+        grid-column: span 2;
+        background-color: white;
 
-<style>
-  html, body {
-    margin: 0;
-  }
-</style>
+      }
+    </style>
+    <script>
+      const canvas = document.getElementById("draw");
+      const ctx = canvas.getContext("2d");
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      ctx.strokeStyle = "#000000";
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      let mouse = {
+        x: 0,
+        y: 0,
+      };
+      let isDrawing = false;
+      const colorButtons = document.querySelectorAll(".color-btn");
+      const sizeButtons = document.querySelectorAll(".size-btn");
+      colorButtons.forEach(function (colorButton) {
+        const color = colorButton.getAttribute("data-color");
+        colorButton.style.backgroundColor = color;
+        colorButton.addEventListener("click", function () {
+          colorButtons.forEach(function (colorButton) {
+            colorButton.classList.remove("active");
+          });
+          this.classList.add("active");
+          ctx.strokeStyle = this.getAttribute("data-color");
+        });
+      });
+      sizeButtons.forEach(function (sizeButton) {
+        const size = sizeButton.getAttribute("data-size");
+        sizeButton.addEventListener("click", function () {
+          sizeButtons.forEach(function (sizeButton) {
+            sizeButton.classList.remove("active");
+          });
+          this.classList.add("active");
+          ctx.lineWidth = this.getAttribute("data-size");
+        });
+      });
 
-</body>
+      canvas.addEventListener("mousedown", (e) => {
+        isDrawing = true;
+        mouse.x = e.offsetX;
+        mouse.y = e.offsetY;
+      });
+      canvas.addEventListener("mousemove", (e) => {
+        if (!isDrawing) return;
+        ctx.beginPath();
+        ctx.moveTo(mouse.x, mouse.y);
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+        mouse.x = e.offsetX;
+        mouse.y = e.offsetY;
+      });
+      canvas.addEventListener("mouseup", (e) => {
+        isDrawing = false;
+      });
+      canvas.addEventListener("mouseout", (e) => {
+        isDrawing = false;
+      });
+    </script>
+  </body>
 </html>
