@@ -5,8 +5,33 @@
     <title>Key Detection</title>
     <script type="text/javascript" src="./cornify.js"></script>
     <link rel="icon" href="https://fav.farm/🔥" />
+    <style>
+      p {
+        font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+        font-size: 20px;
+        font-style: italic;
+      }
+      p span {
+        color: blueviolet;
+        font-style: bold;
+      }
+    </style>
   </head>
   <body>
-    <script></script>
+    <p>Type <span>"magic"</span> and see what happens!</p>
+    <script>
+      const secretCode = "magic";
+      const keyPressArray = [];
+      window.addEventListener("keyup", function (e) {
+        keyPressArray.push(e.key);
+        keyPressArray.splice(
+          -secretCode.length - 1,
+          keyPressArray.length - secretCode.length
+        );
+        if (keyPressArray.join("").includes(secretCode)) {
+          cornify_add();
+        }
+      });
+    </script>
   </body>
 </html>
